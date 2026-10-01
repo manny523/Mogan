@@ -1,0 +1,322 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Surprise for You</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pastel: {
+                            pink: '#ffe4e1',
+                            blush: '#ffb6c1',
+                            peach: '#ffdac1',
+                            cream: '#fffdf9',
+                            text: '#5a4a4a',
+                            highlight: '#d87093',
+                            button: '#ff8da1',
+                            buttonHover: '#ff708a'
+                        }
+                    },
+                    fontFamily: {
+                        script: ['"Dancing Script"', 'cursive'],
+                        sans: ['"Quicksand"', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'bounce-slow': 'bounce 3s infinite',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #fffdf9 0%, #ffe4e1 50%, #ffdac1 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #5a4a4a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Floating Hearts Background */
+        .heart-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .heart {
+            position: absolute;
+            background-color: rgba(255, 182, 193, 0.6);
+            transform: rotate(-45deg);
+            animation: floatUp 12s infinite linear;
+            opacity: 0;
+        }
+
+        .heart::before,
+        .heart::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: inherit;
+            border-radius: 50%;
+        }
+
+        .heart::before {
+            top: -50%;
+            left: 0;
+        }
+
+        .heart::after {
+            left: 50%;
+            top: 0;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) rotate(-45deg) scale(0.5); opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { transform: translateY(-20vh) rotate(-45deg) scale(1.5); opacity: 0; }
+        }
+
+        /* View transitions */
+        .view-section {
+            display: none;
+            opacity: 0;
+            transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+            transform: scale(0.95);
+            z-index: 10;
+            position: relative;
+            width: 100%;
+            max-w: 800px;
+            padding: 20px;
+        }
+
+        .view-section.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Gift Button Styling */
+        .gift-btn {
+            box-shadow: 0 10px 25px rgba(216, 112, 147, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .gift-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(216, 112, 147, 0.6);
+        }
+
+        /* Timer Boxes */
+        .time-box {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 2px solid #ffb6c1;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            min-width: 100px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body class="font-sans antialiased">
+
+    <div class="heart-bg" id="hearts-container"></div>
+
+    <!-- View 1: Initial Button -->
+    <div id="view-initial" class="view-section active text-center">
+        <h1 class="font-script text-5xl md:text-7xl text-pastel-highlight mb-12 drop-shadow-sm">
+            I have a surprise for you...
+        </h1>
+        
+        <button id="open-btn" class="gift-btn bg-pastel-button hover:bg-pastel-buttonHover text-white font-bold py-5 px-10 rounded-full text-2xl md:text-3xl animate-pulse-slow flex items-center gap-4 mx-auto">
+            <span>🎁</span> Open Gift <span>🎁</span>
+        </button>
+        <p class="mt-8 text-gray-500 font-medium tracking-wide">Tap to unwrap your surprise!</p>
+    </div>
+
+    <!-- View 2: Countdown Timer -->
+    <div id="view-countdown" class="view-section text-center">
+        <div class="text-6xl mb-6 animate-bounce-slow">🥺</div>
+        <h2 class="font-script text-5xl md:text-6xl text-pastel-highlight mb-4">
+            Not so fast, my love!
+        </h2>
+        <p class="text-xl md:text-2xl mb-12 font-medium">
+            You have to wait until <span class="font-bold text-pastel-highlight">10:00 PM</span> tonight to open this gift. ❤️
+        </p>
+        
+        <div class="flex justify-center gap-4 md:gap-8 mb-8">
+            <div class="time-box flex flex-col items-center">
+                <span id="hours" class="text-4xl md:text-6xl font-bold text-pastel-highlight font-sans">00</span>
+                <span class="text-sm md:text-base uppercase tracking-widest mt-2 font-semibold">Hours</span>
+            </div>
+            <div class="text-4xl md:text-6xl font-bold text-pastel-highlight self-center pb-8">:</div>
+            <div class="time-box flex flex-col items-center">
+                <span id="minutes" class="text-4xl md:text-6xl font-bold text-pastel-highlight font-sans">00</span>
+                <span class="text-sm md:text-base uppercase tracking-widest mt-2 font-semibold">Mins</span>
+            </div>
+            <div class="text-4xl md:text-6xl font-bold text-pastel-highlight self-center pb-8">:</div>
+            <div class="time-box flex flex-col items-center">
+                <span id="seconds" class="text-4xl md:text-6xl font-bold text-pastel-highlight font-sans">00</span>
+                <span class="text-sm md:text-base uppercase tracking-widest mt-2 font-semibold">Secs</span>
+            </div>
+        </div>
+        <p class="text-lg text-gray-500 italic">Leave this page open, it will unlock automatically!</p>
+    </div>
+
+    <!-- View 3: The Gift Revealed -->
+    <div id="view-gift" class="view-section text-center">
+        <h2 class="font-script text-6xl md:text-7xl text-pastel-highlight mb-6 drop-shadow-md">
+            Here is your gift! 🎉
+        </h2>
+        
+        <div class="bg-white bg-opacity-80 backdrop-blur-md p-8 rounded-3xl shadow-xl border-2 border-pastel-pink max-w-2xl mx-auto mt-6">
+            <div class="rounded-2xl overflow-hidden mb-6 border-4 border-pastel-cream shadow-inner">
+                <!-- Placeholder for a real photo, customizable later -->
+                <img src="https://placehold.co/800x500/ffe4e1/d87093?text=Imagine+a+cute+photo+of+us+here!+🥰" alt="Our Photo" class="w-full object-cover">
+            </div>
+            <p class="font-script text-3xl md:text-4xl text-pastel-highlight mb-4 leading-relaxed">
+                You are the best thing that has ever happened to me.
+            </p>
+            <p class="text-lg md:text-xl text-gray-700 leading-relaxed font-medium">
+                Thank you for being my light, my love, and my best friend. Every second with you is a gift in itself. I love you endlessly! ❤️️
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. Background Hearts Logic ---
+        function createHearts() {
+            const container = document.getElementById('hearts-container');
+            const heartCount = 25; 
+
+            for (let i = 0; i < heartCount; i++) {
+                let heart = document.createElement('div');
+                heart.classList.add('heart');
+                
+                let size = Math.random() * 15 + 10; 
+                let left = Math.random() * 100; 
+                let duration = Math.random() * 8 + 8; 
+                let delay = Math.random() * 10; 
+
+                heart.style.width = `${size}px`;
+                heart.style.height = `${size}px`;
+                heart.style.left = `${left}vw`;
+                heart.style.animationDuration = `${duration}s`;
+                heart.style.animationDelay = `${delay}s`;
+
+                container.appendChild(heart);
+            }
+        }
+
+        // --- 2. Application State & Timer Logic ---
+        const viewInitial = document.getElementById('view-initial');
+        const viewCountdown = document.getElementById('view-countdown');
+        const viewGift = document.getElementById('view-gift');
+        const openBtn = document.getElementById('open-btn');
+        
+        let countdownInterval;
+
+        function switchView(viewToShow) {
+            // Hide all views
+            document.querySelectorAll('.view-section').forEach(view => {
+                view.classList.remove('active');
+                setTimeout(() => {
+                    if(!view.classList.contains('active')) {
+                        view.style.display = 'none';
+                    }
+                }, 500); // Wait for fade out
+            });
+
+            // Show target view
+            setTimeout(() => {
+                viewToShow.style.display = 'flex';
+                // Small delay to allow display block to render before animating opacity
+                setTimeout(() => {
+                    viewToShow.classList.add('active');
+                }, 50);
+            }, 500);
+        }
+
+        function getTargetTime() {
+            let now = new Date();
+            let target = new Date(now);
+            target.setHours(22, 0, 0, 0); // Set to 22:00:00 (10 PM) of the current day
+            
+            // Note: If testing after 10 PM and wanting to force the countdown to tomorrow, 
+            // you would uncomment the next lines. But based on instructions, if past 10 PM, show gift today.
+            // if (now > target) { target.setDate(target.getDate() + 1); }
+            
+            return target;
+        }
+
+        function updateTimer() {
+            const now = new Date().getTime();
+            const target = getTargetTime().getTime();
+            const distance = target - now;
+
+            if (distance <= 0) {
+                // Time is up!
+                clearInterval(countdownInterval);
+                switchView(viewGift);
+                return;
+            }
+
+            // Time calculations for hours, minutes and seconds
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Display the result
+            document.getElementById("hours").innerText = hours.toString().padStart(2, '0');
+            document.getElementById("minutes").innerText = minutes.toString().padStart(2, '0');
+            document.getElementById("seconds").innerText = seconds.toString().padStart(2, '0');
+        }
+
+        // --- 3. Event Listeners ---
+        openBtn.addEventListener('click', () => {
+            const now = new Date().getTime();
+            const target = getTargetTime().getTime();
+            
+            if (now >= target) {
+                // It's already past 10 PM
+                switchView(viewGift);
+            } else {
+                // It's before 10 PM, show countdown
+                switchView(viewCountdown);
+                updateTimer(); // Initial call to avoid 1s delay
+                countdownInterval = setInterval(updateTimer, 1000);
+            }
+        });
+
+        // Initialize background on load
+        window.onload = function() {
+            createHearts();
+        };
+    </script>
+</body>
+</html>
+```
